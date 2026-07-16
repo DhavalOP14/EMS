@@ -5,6 +5,8 @@ import com.ems.backend.dto.auth.LoginRequest;
 import com.ems.backend.dto.auth.RegisterRequest;
 import com.ems.backend.entity.Role;
 import com.ems.backend.entity.User;
+import com.ems.backend.exception.DuplicateResourceException;
+import com.ems.backend.exception.ResourceNotFoundException;
 import com.ems.backend.repository.RoleRepository;
 import com.ems.backend.repository.UserRepository;
 import com.ems.backend.security.CustomUserDetails;
@@ -44,12 +46,12 @@ public class AuthServiceImpl implements AuthService {
 
         // 1. Check email already exists
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("Email already exists.");
+            throw new DuplicateResourceException("Email already exists.");
         }
 
         // 2. Find role
         Role role = roleRepository.findByName(request.getRole())
-                .orElseThrow(() -> new RuntimeException("Role Not found."));
+                .orElseThrow(() -> new ResourceNotFoundException("Role Not found."));
 
         // 3. Create User object
         User user = new User();
