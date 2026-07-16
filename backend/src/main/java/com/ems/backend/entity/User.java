@@ -40,19 +40,24 @@ public class User {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @Column(name="employee_code" , unique = true)
     private String employeeCode;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "department_id")
     private Department department;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "manager_id")
     private User manager;
 
     private String designation;
 
+    @Column(precision = 10,scale = 2)
     private BigDecimal salary;
+
+    @Column(name = "joining_date")
+    private LocalDate joiningDate;
 
     public String getEmployeeCode() {
         return employeeCode;
@@ -102,7 +107,6 @@ public class User {
         this.joiningDate = joiningDate;
     }
 
-    private LocalDate joiningDate;
 
     @PrePersist
     public void prePersist() {
