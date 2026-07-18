@@ -8,15 +8,17 @@ import com.ems.backend.exception.ResourceNotFoundException;
 import com.ems.backend.repository.DepartmentRepository;
 import com.ems.backend.service.DepartmentService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
-public class DepartmentServiceImp implements DepartmentService {
+@Transactional
+public class DepartmentServiceImpl implements DepartmentService {
 
      private final DepartmentRepository departmentRepository;
 
-    public DepartmentServiceImp(DepartmentRepository departmentRepository) {
+    public DepartmentServiceImpl(DepartmentRepository departmentRepository) {
         this.departmentRepository = departmentRepository;
     }
 

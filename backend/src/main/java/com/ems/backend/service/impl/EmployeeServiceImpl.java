@@ -13,16 +13,21 @@ import com.ems.backend.repository.RoleRepository;
 import com.ems.backend.repository.UserRepository;
 import com.ems.backend.service.EmployeeService;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
-public class EmployeeServiceImp implements EmployeeService {
+@Service
+@Transactional
+public class EmployeeServiceImpl implements EmployeeService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final DepartmentRepository departmentRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public EmployeeServiceImp(UserRepository userRepository, RoleRepository roleRepository, DepartmentRepository departmentRepository, PasswordEncoder passwordEncoder) {
+    public EmployeeServiceImpl(UserRepository userRepository, RoleRepository roleRepository, DepartmentRepository departmentRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.departmentRepository = departmentRepository;
@@ -78,17 +83,59 @@ public class EmployeeServiceImp implements EmployeeService {
 
     @Override
     public EmployeeResponse getEmployeeById(Long id) {
-        return null;
+
+       User employee = getEmployee(id);
+        return mapToResponse(employee);
     }
+
 
     @Override
     public EmployeeResponse updateEmployee(Long id, EmployeeRequest request) {
-        return null;
+
+        // Fetch existing employee
+        User employee = getEmployee(id);
+
+        // Check if email already exists for another user
+        Optional<User> existingUser = userRepository.findByEmail(request.getEmail());
+
+        if (existingUser.isPresent()
+                && !existingUser.get().getId().equals(employee.getId())) {
+
+            throw new DuplicateResourceException(
+                    "Email already exists."
+            );
+        }
+
+        // Fetch related entities
+        Role role = getRole(request.getRoleId());
+
+        Department department = getDepartment(request.getDepartmentId());
+
+        User manager = getManager(request.getManagerId());
+
+        // Update employee fields
+        updateEmployeeFields(
+                employee,
+                request,
+                role,
+                department,
+                manager
+        );
+
+        // Save updated employee
+        User updatedEmployee = userRepository.save(employee);
+
+        return mapToResponse(updatedEmployee);
     }
 
     @Override
     public void deleteEmployee(Long id) {
 
+        User employee = getEmployee(id);
+
+        employee.setActive(false);
+
+        userRepository.save(employee);
     }
 
     private EmployeeResponse mapToResponse(User user) {
@@ -125,6 +172,20 @@ public class EmployeeServiceImp implements EmployeeService {
         return response;
     }
 
+    private User getEmployee(Long id) {
+
+        return userRepository
+                .findByIdAndActiveTrueAndRole_NameIn(
+                        id,
+                        List.of(RoleConstants.MANAGER,RoleConstants.EMPLOYEE)
+                )
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Employee not found with id: " + id
+                        )
+                );
+    }
+
 
     private Role getRole(Integer roleId) {
 
@@ -153,7 +214,7 @@ public class EmployeeServiceImp implements EmployeeService {
             return null;
         }
 
-        return userRepository.findById(managerId)
+        return userRepository.findByIdAndActiveTrueAndRole_NameIn(managerId , List.of(RoleConstants.MANAGER))
                 .orElseThrow(() ->
                         new ResourceNotFoundException(
                                 "Manager not found with id: "
@@ -163,6 +224,27 @@ public class EmployeeServiceImp implements EmployeeService {
     }
     private String generateEmployeeCode() {
         return "EMP" + System.currentTimeMillis();
+    }
+
+    private void updateEmployeeFields(
+            User employee,
+            EmployeeRequest request,
+            Role role,
+            Department department,
+            User manager
+    ) {
+
+        employee.setFirstName(request.getFirstName());
+        employee.setLastName(request.getLastName());
+        employee.setEmail(request.getEmail());
+        employee.setPhone(request.getPhone());
+        employee.setDesignation(request.getDesignation());
+        employee.setSalary(request.getSalary());
+        employee.setJoiningDate(request.getJoiningDate());
+
+        employee.setRole(role);
+        employee.setDepartment(department);
+        employee.setManager(manager);
     }
 
     private User buildEmployee(
