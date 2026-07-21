@@ -1,7 +1,8 @@
 package com.ems.backend.controller;
 
-import com.ems.backend.dto.employee.EmployeeRequest;
+import com.ems.backend.dto.employee.CreateEmployeeRequest;
 import com.ems.backend.dto.employee.EmployeeResponse;
+import com.ems.backend.dto.employee.UpdateEmployeeRequest;
 import com.ems.backend.service.EmployeeService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -25,7 +26,7 @@ public class EmployeeController {
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN','HR')")
     public ResponseEntity<EmployeeResponse> createEmployee(
-            @Valid @RequestBody EmployeeRequest request
+            @Valid @RequestBody CreateEmployeeRequest request
     ) {
 
         EmployeeResponse response = employeeService.createEmployee(request);
@@ -64,7 +65,7 @@ public class EmployeeController {
     @PreAuthorize("hasAnyRole('ADMIN','HR')")
     public ResponseEntity<EmployeeResponse> updateEmployee(
             @PathVariable Long id,
-            @Valid @RequestBody EmployeeRequest request
+            @Valid @RequestBody UpdateEmployeeRequest request
     ) {
 
         EmployeeResponse employee =

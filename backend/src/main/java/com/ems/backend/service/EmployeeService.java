@@ -1,20 +1,21 @@
 package com.ems.backend.service;
 
-import com.ems.backend.dto.employee.EmployeeRequest;
+import com.ems.backend.dto.employee.CreateEmployeeRequest;
 import com.ems.backend.dto.employee.EmployeeResponse;
+import com.ems.backend.dto.employee.UpdateEmployeeRequest;
 
 import java.util.List;
 
 public interface EmployeeService {
 
-    EmployeeResponse createEmployee(EmployeeRequest request);
+    EmployeeResponse createEmployee(CreateEmployeeRequest request);
 
     List<EmployeeResponse> getAllEmployees();
 
     EmployeeResponse getEmployeeById(Long id);
 
     EmployeeResponse updateEmployee(Long id,
-                                    EmployeeRequest request);
+                                    UpdateEmployeeRequest request);
 
     void deleteEmployee(Long id);
 }

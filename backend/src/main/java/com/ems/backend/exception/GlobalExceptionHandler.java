@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.context.request.WebRequest;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -15,57 +16,67 @@ import java.util.Map;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(DuplicateResourceException.class)
-    public ResponseEntity<ErrorResponse> handleDuplicateResource(
-
-            DuplicateResourceException ex,
-
-            HttpServletRequest request) {
-
-        ErrorResponse response = new ErrorResponse(
-
-                LocalDateTime.now(),
-
-                HttpStatus.CONFLICT.value(),
-
-                HttpStatus.CONFLICT.getReasonPhrase(),
-
-                ex.getMessage(),
-
-                request.getRequestURI()
-
-        );
-
-        return ResponseEntity
-                .status(HttpStatus.CONFLICT)
-                .body(response);
-    }
-
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleResourceNotFound(
-
+    public ResponseEntity<ErrorResponse> handleResourceNotFoundException(
             ResourceNotFoundException ex,
+            WebRequest request
+    ) {
 
-            HttpServletRequest request) {
-
-        ErrorResponse response = new ErrorResponse(
-
-                LocalDateTime.now(),
-
-                HttpStatus.NOT_FOUND.value(),
-
-                HttpStatus.NOT_FOUND.getReasonPhrase(),
-
+        return buildErrorResponse(
                 ex.getMessage(),
+                HttpStatus.NOT_FOUND,
+                request
+        );
+    }
 
-                request.getRequestURI()
+    @ExceptionHandler(DuplicateResourceException.class)
+    public ResponseEntity<ErrorResponse> handleDuplicateResourceException(
+            DuplicateResourceException ex,
+            WebRequest request
+    ) {
 
+        return buildErrorResponse(
+                ex.getMessage(),
+                HttpStatus.CONFLICT,
+                request
+        );
+    }
+
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<ErrorResponse> handleBadRequestException(
+            BadRequestException ex,
+            WebRequest request
+    ) {
+
+        return buildErrorResponse(
+                ex.getMessage(),
+                HttpStatus.BAD_REQUEST,
+                request
+        );
+    }
+
+    /**
+     * Helper method to create a standard ErrorResponse
+     */
+    private ResponseEntity<ErrorResponse> buildErrorResponse(
+            String message,
+            HttpStatus status,
+            WebRequest request
+    ) {
+
+        ErrorResponse error = new ErrorResponse(
+                LocalDateTime.now(),
+                status.value(),
+                status.getReasonPhrase(),
+                message,
+                request.getDescription(false)
         );
 
         return ResponseEntity
-                .status(HttpStatus.NOT_FOUND)
-                .body(response);
+                .status(status)
+                .body(error);
     }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, String>> handleValidationException(
 
@@ -88,5 +99,4 @@ public class GlobalExceptionHandler {
                 .badRequest()
                 .body(errors);
     }
-
 }

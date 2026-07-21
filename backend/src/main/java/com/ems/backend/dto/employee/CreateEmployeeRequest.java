@@ -5,7 +5,7 @@ import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-public class EmployeeRequest {
+public class CreateEmployeeRequest {
 
     @NotBlank(message = "First name is required.")
     private String firstName;
@@ -43,7 +43,7 @@ public class EmployeeRequest {
     @NotNull(message = "Joining date is required.")
     private LocalDate joiningDate;
 
-    public EmployeeRequest() {
+    public CreateEmployeeRequest() {
     }
 
     public String getFirstName() {

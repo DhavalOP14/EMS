@@ -1,8 +1,9 @@
 package com.ems.backend.service.impl;
 
 import com.ems.backend.constant.RoleConstants;
-import com.ems.backend.dto.employee.EmployeeRequest;
+import com.ems.backend.dto.employee.CreateEmployeeRequest;
 import com.ems.backend.dto.employee.EmployeeResponse;
+import com.ems.backend.dto.employee.UpdateEmployeeRequest;
 import com.ems.backend.entity.Department;
 import com.ems.backend.entity.Role;
 import com.ems.backend.entity.User;
@@ -35,7 +36,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public EmployeeResponse createEmployee(EmployeeRequest request) {
+    public EmployeeResponse createEmployee(CreateEmployeeRequest request) {
 
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new DuplicateResourceException(
@@ -90,7 +91,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
 
     @Override
-    public EmployeeResponse updateEmployee(Long id, EmployeeRequest request) {
+    public EmployeeResponse updateEmployee(Long id, UpdateEmployeeRequest request) {
 
         // Fetch existing employee
         User employee = getEmployee(id);
@@ -228,7 +229,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     private void updateEmployeeFields(
             User employee,
-            EmployeeRequest request,
+            UpdateEmployeeRequest request,
             Role role,
             Department department,
             User manager
@@ -248,7 +249,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     private User buildEmployee(
-            EmployeeRequest request,
+            CreateEmployeeRequest request,
             Role role,
             Department department,
             User manager
