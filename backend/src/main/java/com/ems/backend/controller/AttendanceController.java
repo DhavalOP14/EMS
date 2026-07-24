@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -23,6 +24,7 @@ public class AttendanceController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('HR','ADMIN')")
     public ResponseEntity<AttendanceResponse> markAttendance(
             @Valid @RequestBody AttendanceRequest request
     ) {
@@ -36,6 +38,7 @@ public class AttendanceController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN','HR','MANAGER')")
     public ResponseEntity<List<AttendanceResponse>> getAllAttendance() {
 
         List<AttendanceResponse> response =
@@ -45,6 +48,7 @@ public class AttendanceController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN','HR','MANAGER')")
     public ResponseEntity<AttendanceResponse> getAttendanceById(
             @PathVariable Long id
     ) {
@@ -56,6 +60,7 @@ public class AttendanceController {
     }
 
     @GetMapping("/employee/{employeeId}")
+    @PreAuthorize("hasAnyRole('ADMIN','HR','MANAGER')")
     public ResponseEntity<List<AttendanceResponse>> getAttendanceByEmployee(
             @PathVariable Long employeeId
     ) {
@@ -67,6 +72,7 @@ public class AttendanceController {
     }
 
     @GetMapping("/date/{attendanceDate}")
+    @PreAuthorize("hasAnyRole('ADMIN','HR','MANAGER')")
     public ResponseEntity<List<AttendanceResponse>> getAttendanceByDate(
             @PathVariable
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
@@ -80,6 +86,7 @@ public class AttendanceController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN','HR','MANAGER')")
     public ResponseEntity<AttendanceResponse> updateAttendance(
             @PathVariable Long id,
             @Valid @RequestBody AttendanceRequest request
@@ -92,6 +99,7 @@ public class AttendanceController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN','HR','MANAGER')")
     public ResponseEntity<Void> deleteAttendance(
             @PathVariable Long id
     ) {

@@ -7,6 +7,7 @@ import com.ems.backend.service.LeaveRequestService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,6 +25,7 @@ public class LeaveRequestController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('EMPLOYEE','MANAGER')")
     public ResponseEntity<LeaveResponse> applyLeave(
             @Valid @RequestBody ApplyLeaveRequest request
     ) {
@@ -37,6 +39,7 @@ public class LeaveRequestController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN','HR')")
     public ResponseEntity<List<LeaveResponse>> getAllLeaveRequests() {
 
         return ResponseEntity.ok(
@@ -45,6 +48,7 @@ public class LeaveRequestController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN','HR')")
     public ResponseEntity<LeaveResponse> getLeaveRequestById(
             @PathVariable Long id
     ) {
@@ -55,6 +59,7 @@ public class LeaveRequestController {
     }
 
     @GetMapping("/employee/{employeeId}")
+    @PreAuthorize("hasAnyRole('ADMIN','HR')")
     public ResponseEntity<List<LeaveResponse>> getLeaveRequestsByEmployee(
             @PathVariable Long employeeId
     ) {
@@ -65,6 +70,7 @@ public class LeaveRequestController {
     }
 
     @PutMapping("/{id}/approve")
+    @PreAuthorize("hasAnyRole('ADMIN','HR','MANAGER')")
     public ResponseEntity<LeaveResponse> approveLeave(
             @PathVariable Long id,
             @Valid @RequestBody ApprovalRequest request
@@ -76,6 +82,7 @@ public class LeaveRequestController {
     }
 
     @PutMapping("/{id}/reject")
+    @PreAuthorize("hasAnyRole('ADMIN','HR','MANAGER')")
     public ResponseEntity<LeaveResponse> rejectLeave(
             @PathVariable Long id,
             @Valid @RequestBody ApprovalRequest request
@@ -87,6 +94,7 @@ public class LeaveRequestController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('EMPLOYEE','MANAGER')")
     public ResponseEntity<Void> cancelLeave(
             @PathVariable Long id
     ) {

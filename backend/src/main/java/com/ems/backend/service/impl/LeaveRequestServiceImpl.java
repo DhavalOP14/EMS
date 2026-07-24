@@ -11,7 +11,10 @@ import com.ems.backend.exception.BadRequestException;
 import com.ems.backend.exception.ResourceNotFoundException;
 import com.ems.backend.repository.LeaveRequestRepository;
 import com.ems.backend.repository.UserRepository;
+import com.ems.backend.service.AuthService;
 import com.ems.backend.service.LeaveRequestService;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,10 +28,12 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
 
     private final LeaveRequestRepository leaveRequestRepository;
     private final UserRepository userRepository;
+    private final AuthService authService;
 
-    public LeaveRequestServiceImpl(LeaveRequestRepository leaveRequestRepository, UserRepository userRepository) {
+    public LeaveRequestServiceImpl(LeaveRequestRepository leaveRequestRepository, UserRepository userRepository, AuthService authService) {
         this.leaveRequestRepository = leaveRequestRepository;
         this.userRepository = userRepository;
+        this.authService = authService;
     }
 
 
@@ -41,9 +46,7 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
 
         validateLeaveRequest(request);
 
-        User employee = getEmployee(
-                request.getEmployeeId()
-        );
+        User employee = authService.getLoggedInUser();
 
         LeaveRequest leaveRequest = buildLeaveRequest(
                 request,
@@ -102,7 +105,8 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
             );
         }
 
-        User approver = getApprover(request.getApproverId());
+        User approver =
+                authService.getLoggedInUser();
 
         leaveRequest.setStatus(LeaveStatus.APPROVED);
         leaveRequest.setApprovedBy(approver);
@@ -129,7 +133,8 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
             );
         }
 
-        User approver = getApprover(request.getApproverId());
+        User approver =
+                authService.getLoggedInUser();
 
         leaveRequest.setStatus(LeaveStatus.REJECTED);
         leaveRequest.setApprovedBy(approver);
@@ -184,23 +189,7 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
                 );
     }
 
-    private User getApprover(Long approverId) {
 
-        return userRepository
-                .findByIdAndActiveTrueAndRole_NameIn(
-                        approverId,
-                        List.of(
-                                RoleConstants.ADMIN,
-                                RoleConstants.HR,
-                                RoleConstants.MANAGER
-                        )
-                )
-                .orElseThrow(() ->
-                        new ResourceNotFoundException(
-                                "Approver not found with id: " + approverId
-                        )
-                );
-    }
     private Integer calculateLeaveDays(
             LocalDate startDate,
             LocalDate endDate
@@ -314,4 +303,5 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
 
         return leaveRequest;
     }
+
 }

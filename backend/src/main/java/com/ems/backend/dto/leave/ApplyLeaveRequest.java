@@ -10,8 +10,6 @@ import java.time.LocalDate;
 
 public class ApplyLeaveRequest {
 
-    @NotNull(message = "Employee id is required.")
-    private Long employeeId;
 
     @NotNull(message = "Leave type is required.")
     private LeaveType leaveType;
@@ -29,14 +27,6 @@ public class ApplyLeaveRequest {
     private String reason;
 
     public ApplyLeaveRequest() {
-    }
-
-    public Long getEmployeeId() {
-        return employeeId;
-    }
-
-    public void setEmployeeId(Long employeeId) {
-        this.employeeId = employeeId;
     }
 
     public LeaveType getLeaveType() {
