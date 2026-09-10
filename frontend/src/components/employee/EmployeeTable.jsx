@@ -1,4 +1,40 @@
-function EmployeeTable({ employees }) {
+import { toast } from "react-toastify";
+import { deleteEmployee } from "../../services/employeeService";
+import { useNavigate } from "react-router-dom";
+
+function EmployeeTable({ employees, onEmployeeDeleted }) {
+  const navigate = useNavigate();
+
+  const handleEdit = (id) => {
+    navigate(`/employees/edit/${id}`);
+  };
+
+  const handleDelete = async (id) => {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this employee?",
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      await deleteEmployee(id);
+
+      toast.success("Employee deleted successfully.");
+
+      // Reload employee list
+      onEmployeeDeleted();
+    } catch (error) {
+      console.error("Error deleting employee:", error);
+
+      const message =
+        error.response?.data?.message || "Failed to delete employee.";
+
+      toast.error(message);
+    }
+  };
+
   return (
     <div className="overflow-x-auto rounded-lg bg-white shadow">
       <table className="min-w-full">
@@ -30,11 +66,19 @@ function EmployeeTable({ employees }) {
               <td className="px-4 py-3">{employee.role?.name}</td>
 
               <td className="space-x-2 px-4 py-3 text-center">
-                <button className="rounded bg-green-500 px-3 py-1 text-white hover:bg-green-600">
+                <button
+                  type="button"
+                  onClick={() => handleEdit(employee.id)}
+                  className="rounded bg-green-500 px-3 py-1 text-white hover:bg-green-600"
+                >
                   Edit
                 </button>
 
-                <button className="rounded bg-red-500 px-3 py-1 text-white hover:bg-red-600">
+                <button
+                  type="button"
+                  onClick={() => handleDelete(employee.id)}
+                  className="rounded bg-red-500 px-3 py-1 text-white hover:bg-red-600"
+                >
                   Delete
                 </button>
               </td>

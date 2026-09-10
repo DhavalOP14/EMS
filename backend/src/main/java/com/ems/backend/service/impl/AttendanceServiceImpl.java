@@ -277,6 +277,10 @@ public class AttendanceServiceImpl implements AttendanceService {
 
         response.setId(attendance.getId());
 
+          response.setEmployeeId(
+            attendance.getEmployee().getId()
+        );
+
         response.setEmployeeName(
                 attendance.getEmployee().getFirstName() + " "
                         + attendance.getEmployee().getLastName()
