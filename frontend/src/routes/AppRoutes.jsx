@@ -105,25 +105,25 @@ function AppRoutes() {
             </ProtectedRoute>
           }
         />
+
+        <Route
+          path="/leave-requests"
+          element={
+            <ProtectedRoute>
+              <LeaveList />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/leave-requests/add"
+          element={
+            <ProtectedRoute>
+              <AddLeave />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
-
-      <Route
-        path="/leave-requests"
-        element={
-          <ProtectedRoute>
-            <LeaveList />
-          </ProtectedRoute>
-        }
-      />
-
-      <Route
-        path="/leave-requests/add"
-        element={
-          <ProtectedRoute>
-            <AddLeave />
-          </ProtectedRoute>
-        }
-      />
     </BrowserRouter>
   );
 }

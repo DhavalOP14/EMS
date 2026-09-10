@@ -35,4 +35,6 @@ public interface LeaveRequestService {
     void cancelLeave(
             Long leaveRequestId
     );
+
+    List<LeaveResponse> getMyLeaveRequests();
 }

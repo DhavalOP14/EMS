@@ -70,6 +70,30 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public List<LeaveResponse> getMyLeaveRequests() {
+
+        String email = SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getName();
+
+        User employee = userRepository
+                .findByEmail(email)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "User not found."
+                        )
+                );
+
+        return leaveRequestRepository
+                .findByEmployeeAndActiveTrue(employee)
+                .stream()
+                .map(this::mapToResponse)
+                .toList();
+    }
+
+    @Override
     public LeaveResponse getLeaveRequestById(Long id) {
 
         LeaveRequest leaveRequest = getLeaveRequest(id);

@@ -41,3 +41,8 @@ export const cancelLeave = async (id) => {
   const response = await api.delete(`/leave-requests/${id}`);
   return response.data;
 };
+
+export const getMyLeaveRequests = async () => {
+  const response = await api.get("/leave-requests/my");
+  return response.data;
+};
