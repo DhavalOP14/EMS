@@ -40,11 +40,11 @@ public class AttendanceResponse {
 
     public Long getEmployeeId() {
     return employeeId;
-}
+    }
 
-public void setEmployeeId(Long employeeId) {
+    public void setEmployeeId(Long employeeId) {
     this.employeeId = employeeId;
-}
+    }
 
     public String getEmployeeName() {
         return employeeName;
